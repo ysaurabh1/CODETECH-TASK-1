@@ -1,0 +1,180 @@
+-- Create the airline database
+CREATE DATABASE AirlineDB;
+USE AirlineDB;
+
+-- Table: Passengers
+CREATE TABLE Passengers (
+    PassengerID INT AUTO_INCREMENT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    Gender ENUM('Male', 'Female', 'Other'),
+    Age INT
+);
+
+-- Table: Destinations
+CREATE TABLE Destinations (
+    DestinationID INT AUTO_INCREMENT PRIMARY KEY,
+    City VARCHAR(100),
+    Country VARCHAR(100)
+);
+
+-- Table: Flights
+CREATE TABLE Flights (
+    FlightID INT AUTO_INCREMENT PRIMARY KEY,
+    FlightNumber VARCHAR(10),
+    DepartureTime DATETIME,
+    ArrivalTime DATETIME,
+    Origin VARCHAR(100),
+    DestinationID INT,
+    FOREIGN KEY (DestinationID) REFERENCES Destinations(DestinationID)
+);
+
+-- Table: Tickets
+CREATE TABLE Tickets (
+    TicketID INT AUTO_INCREMENT PRIMARY KEY,
+    PassengerID INT,
+    FlightID INT,
+    BookingDate DATETIME,
+    SeatNumber VARCHAR(5),
+    FOREIGN KEY (PassengerID) REFERENCES Passengers(PassengerID),
+    FOREIGN KEY (FlightID) REFERENCES Flights(FlightID)
+);
+
+-- Insert sample data into Destinations
+INSERT INTO Destinations (City, Country) VALUES
+('New York', 'USA'),
+('London', 'UK'),
+('Paris', 'France'),
+('Tokyo', 'Japan'),
+('Sydney', 'Australia'),
+('Mumbai', 'India'),
+('Beijing', 'China'),
+('Dubai', 'UAE'),
+('Cape Town', 'South Africa'),
+('Rio de Janeiro', 'Brazil');
+
+-- Insert sample data into Passengers
+INSERT INTO Passengers (FirstName, LastName, Gender, Age) VALUES
+('John', 'Doe', 'Male', 34),
+('Jane', 'Smith', 'Female', 29),
+('Carlos', 'Garcia', 'Male', 41),
+('Emily', 'Davis', 'Female', 22),
+('Ahmed', 'Khan', 'Male', 28),
+('Wei', 'Zhang', 'Male', 36),
+('Fatima', 'Ali', 'Female', 31),
+('Liam', 'Brown', 'Male', 25),
+('Olivia', 'Wilson', 'Female', 33),
+('Noah', 'Martinez', 'Male', 27),
+-- Add 40 more passengers
+('Emma', 'Lopez', 'Female', 30),
+('William', 'Taylor', 'Male', 45),
+('Sophia', 'White', 'Female', 19),
+('James', 'Anderson', 'Male', 50),
+('Ava', 'Harris', 'Female', 21),
+('Isabella', 'Clark', 'Female', 26),
+('Benjamin', 'Lewis', 'Male', 38),
+('Mia', 'Walker', 'Female', 24),
+('Lucas', 'Hall', 'Male', 32),
+('Charlotte', 'Allen', 'Female', 20),
+('Henry', 'Young', 'Male', 40),
+('Amelia', 'Hernandez', 'Female', 23),
+('Sebastian', 'King', 'Male', 37),
+('Harper', 'Scott', 'Female', 35),
+('Alexander', 'Green', 'Male', 39),
+('Evelyn', 'Adams', 'Female', 28),
+('Daniel', 'Baker', 'Male', 42),
+('Aria', 'Nelson', 'Female', 27),
+('Elijah', 'Carter', 'Male', 44),
+('Grace', 'Mitchell', 'Female', 34),
+('Logan', 'Perez', 'Male', 46),
+('Zoey', 'Roberts', 'Female', 22),
+('David', 'Turner', 'Male', 33),
+('Scarlett', 'Phillips', 'Female', 25),
+('Matthew', 'Campbell', 'Male', 35),
+('Chloe', 'Parker', 'Female', 30),
+('Jack', 'Evans', 'Male', 31),
+('Ella', 'Edwards', 'Female', 28),
+('Owen', 'Collins', 'Male', 29),
+('Victoria', 'Stewart', 'Female', 27),
+('Gabriel', 'Sanchez', 'Male', 32),
+('Riley', 'Morris', 'Female', 26),
+('Carter', 'Rogers', 'Male', 23),
+('Lily', 'Reed', 'Female', 24),
+('Luke', 'Cook', 'Male', 22),
+('Zoey', 'Gray', 'Female', 20);
+
+-- Insert sample data into Flights
+INSERT INTO Flights (FlightNumber, DepartureTime, ArrivalTime, Origin, DestinationID) VALUES
+('AA101', '2025-01-03 08:00:00', '2025-01-03 14:00:00', 'Los Angeles', 1),
+('BA202', '2025-01-04 10:00:00', '2025-01-04 20:00:00', 'New Delhi', 2),
+('AF303', '2025-01-05 15:00:00', '2025-01-05 23:00:00', 'Berlin', 3),
+('JL404', '2025-01-06 12:00:00', '2025-01-06 22:00:00', 'Seoul', 4),
+('QF505', '2025-01-07 09:00:00', '2025-01-07 19:00:00', 'Singapore', 5);
+
+-- Insert sample data into Tickets
+INSERT INTO Tickets (PassengerID, FlightID, BookingDate, SeatNumber) VALUES
+(1, 1, '2024-12-01 10:00:00', '12A'),
+(2, 2, '2024-12-02 11:30:00', '14B'),
+(3, 3, '2024-12-03 12:45:00', '16C'),
+(4, 4, '2024-12-04 14:00:00', '18D'),
+(5, 5, '2024-12-05 15:15:00', '20E');
+
+-- Query: Retrieve passenger details along with flight details for booked tickets
+SELECT 
+    Passengers.FirstName, 
+    Passengers.LastName, 
+    Tickets.SeatNumber, 
+    Flights.FlightNumber, 
+    Destinations.City AS DestinationCity, 
+    Destinations.Country AS DestinationCountry
+FROM Passengers
+INNER JOIN Tickets ON Passengers.PassengerID = Tickets.PassengerID
+INNER JOIN Flights ON Tickets.FlightID = Flights.FlightID
+INNER JOIN Destinations ON Flights.DestinationID = Destinations.DestinationID;
+-- Query: Retrieve all passengers and their ticket details (if any)
+SELECT 
+    Passengers.FirstName, 
+    Passengers.LastName, 
+    Tickets.SeatNumber, 
+    Flights.FlightNumber, 
+    Destinations.City AS DestinationCity
+FROM Passengers
+LEFT JOIN Tickets ON Passengers.PassengerID = Tickets.PassengerID
+LEFT JOIN Flights ON Tickets.FlightID = Flights.FlightID
+LEFT JOIN Destinations ON Flights.DestinationID = Destinations.DestinationID;
+-- Query: Retrieve all flights and associated passenger details (if any)
+SELECT 
+    Flights.FlightNumber, 
+    Flights.DepartureTime, 
+    Flights.ArrivalTime, 
+    Destinations.City AS DestinationCity, 
+    Passengers.FirstName, 
+    Passengers.LastName
+FROM Flights
+RIGHT JOIN Tickets ON Flights.FlightID = Tickets.FlightID
+RIGHT JOIN Passengers ON Tickets.PassengerID = Passengers.PassengerID
+JOIN Destinations ON Flights.DestinationID = Destinations.DestinationID;
+-- Query: Retrieve all passengers, flights, and their relationships (if any)
+SELECT 
+    Passengers.FirstName, 
+    Passengers.LastName, 
+    Tickets.SeatNumber, 
+    Flights.FlightNumber, 
+    Destinations.City AS DestinationCity
+FROM Passengers
+LEFT JOIN Tickets ON Passengers.PassengerID = Tickets.PassengerID
+LEFT JOIN Flights ON Tickets.FlightID = Flights.FlightID
+LEFT JOIN Destinations ON Flights.DestinationID = Destinations.DestinationID
+
+UNION
+
+SELECT 
+    Passengers.FirstName, 
+    Passengers.LastName, 
+    Tickets.SeatNumber, 
+    Flights.FlightNumber, 
+    Destinations.City AS DestinationCity
+FROM Passengers
+RIGHT JOIN Tickets ON Passengers.PassengerID = Tickets.PassengerID
+RIGHT JOIN Flights ON Tickets.FlightID = Flights.FlightID
+JOIN Destinations ON Flights.DestinationID = Destinations.DestinationID;
